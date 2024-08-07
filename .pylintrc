@@ -1,0 +1,12 @@
+[MASTER]
+load-plugins=pylint_django
+
+[MESSAGES CONTROL]
+disable=missing-function-docstring,no-member
+
+[TYPECHECK]
+ignored-modules=django
+ignored-classes=django.db.models.Model
+
+[Django]
+django-settings-module=animal_shelter.settings
