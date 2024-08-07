@@ -1,4 +1,8 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    BaseUserManager,
+    PermissionsMixin,
+)
 from django.db import models
 
 
@@ -16,10 +20,15 @@ class VolunteerManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
         return self.create_user(email, password, **extra_fields)
 
 
-class Volunteer(AbstractBaseUser):
+class Volunteer(AbstractBaseUser, PermissionsMixin):
     STATUS_CHOICES = [
         ("active", "Active"),
         ("inactive", "Inactive"),
@@ -31,6 +40,21 @@ class Volunteer(AbstractBaseUser):
     status = models.CharField(max_length=8, choices=STATUS_CHOICES)
     is_staff = models.BooleanField(default=False)  # Required for admin access
     is_active = models.BooleanField(default=True)
+
+    groups = models.ManyToManyField(
+        "auth.Group",
+        related_name="volunteer_set",  # Custom related_name for the Volunteer model
+        blank=True,
+        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+        verbose_name="groups",
+    )
+    user_permissions = models.ManyToManyField(
+        "auth.Permission",
+        related_name="volunteer_user_set",  # Custom related_name for the Volunteer model
+        blank=True,
+        help_text="Specific permissions for this user.",
+        verbose_name="user permissions",
+    )
 
     objects = VolunteerManager()
 
