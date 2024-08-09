@@ -41,21 +41,6 @@ class Adoptant(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)  # Required for admin access
     is_active = models.BooleanField(default=True)
 
-    groups = models.ManyToManyField(
-        "auth.Group",
-        related_name="adoptant_set",  # Custom related_name for the Adoptant model
-        blank=True,
-        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
-        verbose_name="groups",
-    )
-    user_permissions = models.ManyToManyField(
-        "auth.Permission",
-        related_name="adoptant_user_set",  # Custom related_name for the Adoptant model
-        blank=True,
-        help_text="Specific permissions for this user.",
-        verbose_name="user permissions",
-    )
-
     objects = AdoptantManager()
 
     USERNAME_FIELD = "email"
